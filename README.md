@@ -28,3 +28,7 @@ docker run --rm -it -v "$(pwd)":/workspace khaledhassan/simplescalar:latest /bin
 ```
 
 Now you can edit your file directly in you pwd while run the Simplescalar inside the container to simulate your benchmark.
+
+## Resources
+
+- [Linux 101的Docker教程](https://101.lug.ustc.edu.cn/Ch08/#install-docker)
