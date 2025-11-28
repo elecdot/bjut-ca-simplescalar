@@ -2,6 +2,11 @@
 
 This repository contains a `Dockerfile` that builds an image based on `khaledhassan/simplescalar:latest` and prepares a `/workspace` directory.
 
+## Prerequisite
+
+1. Install [Docker Desktop](https://docs.docker.com/get-docker/) on your computer.
+2. （可选，但推荐）配置镜像源，你可以参考这篇[教程](https://yeasy.gitbook.io/docker_practice/install/mirror)
+
 ## How to build
 - Build the local image (run from the `ca1` directory where the `Dockerfile` lives):
 
