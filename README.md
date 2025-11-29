@@ -19,6 +19,8 @@ docker build -t simplescalar .
 
 ```bash
 docker run --rm -it -v "$(pwd)":/workspace simplescalar /bin/bash
+# or if you are using Git Bash on Windows
+docker run --rm -it -v "$(cygpath -m $(pwd)):/workspace" simplescalar
 ```
 
 - If you prefer to run the upstream base image without building locally:
