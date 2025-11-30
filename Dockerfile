@@ -5,7 +5,7 @@ RUN sed -i 's|archive.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g; s|security.ubun
         apt-get install -y \
         bash \
         sudo wget \
-        git vim
+        git vim tmux
 
 WORKDIR /workspace
 CMD [ "/bin/bash" ]
