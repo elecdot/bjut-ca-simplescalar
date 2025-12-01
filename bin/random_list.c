@@ -18,6 +18,10 @@ int main(int argc, char *argv[]) {
        第二个参数：遍历步数（默认 = 4 * 节点数） */
     int n = (argc > 1) ? atoi(argv[1]) : 1024 * 1024;
     int steps = (argc > 2) ? atoi(argv[2]) : 4 * n;
+    int i;
+    int head;
+    int p;
+    volatile long sum = 0;
 
     Node *nodes = (Node *)malloc((size_t)n * sizeof(Node));
     int *perm = (int *)malloc((size_t)n * sizeof(int));
@@ -27,14 +31,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    for (int i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         nodes[i].value = i;
         nodes[i].next = -1;
         perm[i] = i;
     }
 
     /* Fisher-Yates 打乱 perm，构造随机访问顺序 */
-    for (int i = n - 1; i > 0; i--) {
+    for (i = n - 1; i > 0; i--) {
         unsigned int r = my_rand() % (unsigned int)(i + 1);
         int tmp = perm[i];
         perm[i] = perm[r];
@@ -42,15 +46,14 @@ int main(int argc, char *argv[]) {
     }
 
     /* 根据 perm 构造单链表 */
-    int head = perm[0];
-    for (int i = 0; i < n - 1; i++) {
+    head = perm[0];
+    for (i = 0; i < n - 1; i++) {
         nodes[perm[i]].next = perm[i + 1];
     }
     nodes[perm[n - 1]].next = -1;
 
-    volatile long long sum = 0;
-    int p = head;
-    for (int i = 0; i < steps; i++) {
+    p = head;
+    for (i = 0; i < steps; i++) {
         if (p == -1) {
             p = head;  /* 走完一圈后重新从头开始 */
         }
@@ -58,7 +61,7 @@ int main(int argc, char *argv[]) {
         p = nodes[p].next;
     }
 
-    printf("sum=%lld\n", sum);
+    printf("sum=%ld\n", sum);
 
     free(nodes);
     free(perm);

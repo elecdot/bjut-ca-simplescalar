@@ -7,6 +7,8 @@
 
 int main(int argc, char *argv[]) {
     int N = (argc > 1) ? atoi(argv[1]) : 256;
+    int i, j, k;
+    volatile double checksum = 0.0;
 
     size_t size = (size_t)N * (size_t)N;
     double *A = (double *)malloc(size * sizeof(double));
@@ -20,8 +22,8 @@ int main(int argc, char *argv[]) {
     }
 
     /* 初始化矩阵 */
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
             A[i * N + j] = (i + j) * 0.5;
             B[i * N + j] = (i == j) ? 1.0 : 0.0;
             C[i * N + j] = 0.0;
@@ -29,17 +31,16 @@ int main(int argc, char *argv[]) {
     }
 
     /* 经典 i-j-k 三重循环 */
-    for (int i = 0; i < N; i++) {
-        for (int k = 0; k < N; k++) {
+    for (i = 0; i < N; i++) {
+        for (k = 0; k < N; k++) {
             double aik = A[i * N + k];
-            for (int j = 0; j < N; j++) {
+            for (j = 0; j < N; j++) {
                 C[i * N + j] += aik * B[k * N + j];
             }
         }
     }
 
-    volatile double checksum = 0.0;
-    for (int i = 0; i < N; i++) {
+    for (i = 0; i < N; i++) {
         checksum += C[i * N + (i % N)];
     }
 
