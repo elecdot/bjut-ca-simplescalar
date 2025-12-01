@@ -2,11 +2,10 @@
 
 sim:
   sim_cache: "sim-cache"        # 如果不在 PATH，可以写绝对路径
-  max_workers: 4                # 并行跑几个实验（逻辑核数的一半左右比较稳妥）
+  max_workers: 10 # 4                # 并行跑几个实验（逻辑核数的一半左右比较稳妥）
   output_dir: "results"         # 所有 sim-cache 输出和分析结果目录
-  base_options:                 # 所有实验通用的 Cache 选项（统一 L2 + 统一指令/数据 Cache）
-    - "-cache:dl2 ul2:1024:64:4:l"
-    - "-cache:il1 dl1"
+  base_options:                 # 所有实验通用的 Cache 选项
+    - "-cache:il1 il1:256:32:1:l"   # 显式定义 il1，兼容旧版 sim-cache，避免 il1 未定义错误
     - "-cache:il2 dl2"
 
 programs:
@@ -82,22 +81,27 @@ experiments:
         label: "32B (64x32x1)"
         options:
           - "-cache:dl1 dl1:64:32:1:l"
+          - "-cache:dl2 ul2:1024:2048:4:l"   # L2 块大于等于最大 L1 块，避免跨块错误
       - id: "bsize_64"
         label: "64B (32x64x1)"
         options:
           - "-cache:dl1 dl1:32:64:1:l"
+          - "-cache:dl2 ul2:1024:2048:4:l"
       - id: "bsize_128"
         label: "128B (16x128x1)"
         options:
           - "-cache:dl1 dl1:16:128:1:l"
+          - "-cache:dl2 ul2:1024:2048:4:l"
       - id: "bsize_256"
         label: "256B (8x256x1)"
         options:
           - "-cache:dl1 dl1:8:256:1:l"
+          - "-cache:dl2 ul2:1024:2048:4:l"
       - id: "bsize_2048"
         label: "2048B (1x2048x1)"
         options:
           - "-cache:dl1 dl1:1:2048:1:l"
+          - "-cache:dl2 ul2:1024:2048:4:l"
 
   # 4) 用 matmul 做相联度的关键点实验
   key_assoc_matmul:
