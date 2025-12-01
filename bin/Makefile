@@ -1,7 +1,41 @@
 # Makefile
 
-# SimpleScalar 交叉编译器（按你本地环境改）
-CC      ?= sslittle-na-sstrix-gcc
+# ---------------- Docker wrapper ---------------- #
+# 需要在容器里运行 SimpleScalar 工具链。默认使用本仓库的 Docker 镜像。
+REPO_ROOT   := $(abspath $(CURDIR)/..)
+DOCKER_IMG  ?= simplescalar
+USE_DOCKER  ?= 1
+
+ifeq ($(INSIDE_SIM_DOCKER),)
+ifneq ($(USE_DOCKER),0)
+DOCKER_RUN  := docker run --rm -v "$(REPO_ROOT)":/workspace -w /workspace/bin -e INSIDE_SIM_DOCKER=1 $(DOCKER_IMG)
+
+.PHONY: all build run analyze clean docker-shell docker-image
+
+all build run analyze clean:
+	$(DOCKER_RUN) make $@ USE_DOCKER=0
+
+docker-shell:
+	$(DOCKER_RUN) /bin/bash
+
+docker-image:
+	docker build -t $(DOCKER_IMG) "$(REPO_ROOT)"
+else
+# 如果用户明确关闭 Docker，则继续使用本地环境
+endif
+endif
+
+# ---------------- Pipeline inside container ---------------- #
+ifeq ($(INSIDE_SIM_DOCKER),1)
+ENABLE_PIPELINE := 1
+endif
+ifeq ($(USE_DOCKER),0)
+ENABLE_PIPELINE := 1
+endif
+
+ifeq ($(ENABLE_PIPELINE),1)
+# SimpleScalar 交叉编译器（容器内已提供）
+CC      := sslittle-na-sstrix-gcc
 CFLAGS  ?= -O2
 
 PYTHON  ?= python3
@@ -39,3 +73,4 @@ analyze:
 # 清理
 clean:
 	rm -rf $(BIN_DIR) $(RESULT_DIR)
+endif

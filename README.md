@@ -1,35 +1,55 @@
-# Build and run this container
+# Build and run with Docker
 
-This repository contains a `Dockerfile` that builds an image based on `khaledhassan/simplescalar:latest` and prepares a `/workspace` directory.
+SimpleScalar 的交叉编译器与 `sim-cache` 需要在容器里运行。本仓库提供的 `Makefile` 已经自动通过 Docker 代理执行，无需在宿主机安装 SimpleScalar。
 
 ## Prerequisite
 
-1. Install [Docker Desktop](https://docs.docker.com/get-docker/) on your computer.
-2. （可选，但推荐）配置镜像源，你可以参考这篇[教程](https://yeasy.gitbook.io/docker_practice/install/mirror)
+1. 安装 [Docker](https://docs.docker.com/get-docker/)。  
+2. （可选）配置镜像源，你可以参考这篇[教程](https://yeasy.gitbook.io/docker_practice/install/mirror)。
 
-## How to build
-- Build the local image (run from the `ca1` directory where the `Dockerfile` lives):
+## Build the local image
+
+在仓库根目录执行：
 
 ```bash
 docker build -t simplescalar .
 ```
 
-## How to run
-- Start an interactive shell in the container with the current directory mounted into `/workspace`:
+镜像基于 `khaledhassan/simplescalar:latest`，并预装了 `python3 + pandas + matplotlib` 以运行 `analyze.py`。
+
+## Run the workflow (Makefile 会自动进入容器)
+
+1) 进入 `bin/` 目录（Makefile 和源代码所在位置）：
 
 ```bash
-docker run --rm -it -v "$(pwd)":/workspace simplescalar /bin/bash
-# or if you are using Git Bash on Windows
-docker run --rm -it -v "$(cygpath -m $(pwd)):/workspace" simplescalar
+cd bin
 ```
 
-- If you prefer to run the upstream base image without building locally:
+2) 直接执行流水线，Makefile 会把自己再拉进容器：
 
 ```bash
-docker run --rm -it -v "$(pwd)":/workspace khaledhassan/simplescalar:latest /bin/bash
+make all        # 等价于 build + run + analyze
+# 或分别执行：
+make build
+make run
+make analyze
 ```
 
-Now you can edit your file directly in you pwd while run the Simplescalar inside the container to simulate your benchmark.
+默认使用镜像名 `simplescalar`，并把仓库根目录挂载到容器的 `/workspace` 下。产物写入 `bin/bin/` 与 `bin/results/`。
+
+## Helpers
+
+- 打开容器交互 shell（会挂载当前仓库到 `/workspace`）：
+
+```bash
+cd bin && make docker-shell
+```
+
+- 如果你已经手动进入容器，需要绕过 Docker 代理，可加 `USE_DOCKER=0`：
+
+```bash
+make all USE_DOCKER=0
+```
 
 ## Resources
 
