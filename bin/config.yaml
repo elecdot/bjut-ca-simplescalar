@@ -1,0 +1,136 @@
+# config.yaml
+
+sim:
+  sim_cache: "sim-cache"        # 如果不在 PATH，可以写绝对路径
+  max_workers: 4                # 并行跑几个实验（逻辑核数的一半左右比较稳妥）
+  output_dir: "results"         # 所有 sim-cache 输出和分析结果目录
+  base_options:                 # 所有实验通用的 Cache 选项（统一 L2 + 统一指令/数据 Cache）
+    - "-cache:dl2 ul2:1024:64:4:l"
+    - "-cache:il1 dl1"
+    - "-cache:il2 dl2"
+
+programs:
+  seq_scan:
+    path: "bin/seq_scan.ss"
+    args: ["8000000", "4"]      # N=8M, repeat=4
+  matmul:
+    path: "bin/matmul.ss"
+    args: ["256"]               # N=256
+  random_list:
+    path: "bin/random_list.ss"
+    args: ["1048576", "4194304"]  # n=1M, steps=4*n
+
+experiments:
+  # 1) 固定在 seq_scan 上：改变 L1 容量（通过 nsets 变化，assoc=1, bsize=32）
+  capacity:
+    program: "seq_scan"
+    description: "Vary L1 data cache capacity via nsets (assoc=1, bsize=32)"
+    configs:
+      - id: "cap_x1"
+        label: "2KB (64x32x1)"
+        options:
+          - "-cache:dl1 dl1:64:32:1:l"
+      - id: "cap_x2"
+        label: "4KB (128x32x1)"
+        options:
+          - "-cache:dl1 dl1:128:32:1:l"
+      - id: "cap_x4"
+        label: "8KB (256x32x1)"
+        options:
+          - "-cache:dl1 dl1:256:32:1:l"
+      - id: "cap_x8"
+        label: "16KB (512x32x1)"
+        options:
+          - "-cache:dl1 dl1:512:32:1:l"
+      - id: "cap_x64"
+        label: "128KB (4096x32x1)"
+        options:
+          - "-cache:dl1 dl1:4096:32:1:l"
+
+  # 2) 固定在 seq_scan 上：改变 L1 相联度（容量约 2KB 不变）
+  associativity:
+    program: "seq_scan"
+    description: "Vary L1 associativity at roughly 2KB total size (bsize=32)"
+    configs:
+      - id: "assoc_1way"
+        label: "1-way (64x32x1)"
+        options:
+          - "-cache:dl1 dl1:64:32:1:l"
+      - id: "assoc_2way"
+        label: "2-way (32x32x2)"
+        options:
+          - "-cache:dl1 dl1:32:32:2:l"
+      - id: "assoc_4way"
+        label: "4-way (16x32x4)"
+        options:
+          - "-cache:dl1 dl1:16:32:4:l"
+      - id: "assoc_8way"
+        label: "8-way (8x32x8)"
+        options:
+          - "-cache:dl1 dl1:8:32:8:l"
+      - id: "assoc_64way"
+        label: "64-way (1x32x64)"
+        options:
+          - "-cache:dl1 dl1:1:32:64:l"
+
+  # 3) 固定在 seq_scan 上：改变 L1 块大小（容量约 2KB 不变，assoc=1）
+  blocksize:
+    program: "seq_scan"
+    description: "Vary L1 block size at roughly 2KB total size (assoc=1)"
+    configs:
+      - id: "bsize_32"
+        label: "32B (64x32x1)"
+        options:
+          - "-cache:dl1 dl1:64:32:1:l"
+      - id: "bsize_64"
+        label: "64B (32x64x1)"
+        options:
+          - "-cache:dl1 dl1:32:64:1:l"
+      - id: "bsize_128"
+        label: "128B (16x128x1)"
+        options:
+          - "-cache:dl1 dl1:16:128:1:l"
+      - id: "bsize_256"
+        label: "256B (8x256x1)"
+        options:
+          - "-cache:dl1 dl1:8:256:1:l"
+      - id: "bsize_2048"
+        label: "2048B (1x2048x1)"
+        options:
+          - "-cache:dl1 dl1:1:2048:1:l"
+
+  # 4) 用 matmul 做相联度的关键点实验
+  key_assoc_matmul:
+    program: "matmul"
+    description: "Key associativity points for matmul at ~2KB L1"
+    configs:
+      - id: "mm_assoc_1way"
+        label: "matmul 1-way"
+        options:
+          - "-cache:dl1 dl1:64:32:1:l"
+      - id: "mm_assoc_4way"
+        label: "matmul 4-way"
+        options:
+          - "-cache:dl1 dl1:16:32:4:l"
+      - id: "mm_assoc_64way"
+        label: "matmul 64-way"
+        options:
+          - "-cache:dl1 dl1:1:32:64:l"
+
+  # 5) 用 random_list 做相联度的关键点实验
+  key_assoc_random:
+    program: "random_list"
+    description: "Key associativity points for random list at ~2KB L1"
+    configs:
+      - id: "rl_assoc_1way"
+        label: "random_list 1-way"
+        options:
+          - "-cache:dl1 dl1:64:32:1:l"
+      - id: "rl_assoc_4way"
+        label: "random_list 4-way"
+        options:
+          - "-cache:dl1 dl1:16:32:4:l"
+      - id: "rl_assoc_64way"
+        label: "random_list 64-way"
+        options:
+          - "-cache:dl1 dl1:1:32:64:l"
