@@ -9,6 +9,7 @@ USE_DOCKER  ?= 1
 ifeq ($(INSIDE_SIM_DOCKER),)
 ifneq ($(USE_DOCKER),0)
 DOCKER_RUN  := docker run --rm -v "$(REPO_ROOT)":/workspace -w /workspace/bin -e INSIDE_SIM_DOCKER=1 $(DOCKER_IMG)
+DOCKER_IT_RUN := docker run --rm -it -v "$(REPO_ROOT)":/workspace -w /workspace/bin -e INSIDE_SIM_DOCKER=1 $(DOCKER_IMG)
 
 .PHONY: all build run analyze clean docker-shell docker-image
 
@@ -16,7 +17,7 @@ all build run analyze clean:
 	$(DOCKER_RUN) make $@ USE_DOCKER=0
 
 docker-shell:
-	$(DOCKER_RUN) /bin/bash
+	$(DOCKER_IT_RUN) /bin/bash
 
 docker-image:
 	docker build -t $(DOCKER_IMG) "$(REPO_ROOT)"
