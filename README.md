@@ -51,6 +51,13 @@ cd bin && make docker-shell
 make all USE_DOCKER=0
 ```
 
+### Documentations
+
+- `docs/build.md`：构建/运行流程与关键约束（Docker、Makefile、路径）
+- `docs/config.md`：config.yaml 字段说明、约束、示例
+- `docs/expect.md`：期望输出样例（CSV/图表）与目录说明
+- `TROUBLESHOOTING.md`：常见问题与解决方案（pip、DISPLAY、L1/L2 等）
+
 ## Troubleshooting
 
 ### Error: simulation fails when using large L1 cache sizes in blocksize experiment
