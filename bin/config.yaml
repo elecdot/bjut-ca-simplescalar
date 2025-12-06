@@ -82,27 +82,27 @@ experiments:
         label: "32B (64x32x2)"
         options:
           - "-cache:dl1 dl1:64:32:2:l"
-          - "-cache:dl2 ul2:1024:2048:4:l"   # L2 块大于等于最大 L1 块，避免跨块错误
+          #- "-cache:dl2 ul2:1024:2048:4:l"   # L2 块大于等于最大 L1 块，避免跨块错误
       - id: "bsize_64"
         label: "64B (32x64x2)"
         options:
           - "-cache:dl1 dl1:32:64:2:l"
-          - "-cache:dl2 ul2:1024:2048:4:l"
+          #- "-cache:dl2 ul2:1024:2048:4:l"
       - id: "bsize_128"
         label: "128B (16x128x2)"
         options:
           - "-cache:dl1 dl1:16:128:2:l"
-          - "-cache:dl2 ul2:1024:2048:4:l"
+          #- "-cache:dl2 ul2:1024:2048:4:l"
       - id: "bsize_256"
         label: "256B (8x256x2)"
         options:
           - "-cache:dl1 dl1:8:256:2:l"
-          - "-cache:dl2 ul2:1024:2048:4:l"
+          #- "-cache:dl2 ul2:1024:2048:4:l"
       - id: "bsize_2048"
         label: "2048B (1x2048x2)"
         options:
           - "-cache:dl1 dl1:1:2048:2:l"
-          - "-cache:dl2 ul2:1024:2048:4:l"
+          #- "-cache:dl2 ul2:1024:2048:4:l"
 
   #  matmul #########################################################################
   # 1) matmul 改变 L1 容量（通过 nsets 变化，assoc=2, bsize=32）
