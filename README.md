@@ -51,6 +51,26 @@ cd bin && make docker-shell
 make all USE_DOCKER=0
 ```
 
+## Troubleshooting
+
+### Error: simulation fails when using large L1 cache sizes in blocksize experiment
+
+**Symptom:** SimpleScalar exits with an error when L1 cache size is configured above 128KB.
+
+**Actual**: `sim-cache` output:
+```bash
+fatal: cache: access error: access spacs block, addr 0x7fff8000
+...
+dl1.miss_rate                1.0000 # miss rate (i.e, misses/ref)
+...
+# EXITCODE: 1
+```
+
+**Cause:** 设置实验时L1块大小 (128/256/2048...) 大于默认的L2块大小64，SimpleScalar 要求下层块大小不小于上层，否则会在访问时炸掉。
+
+**Fix:** 直接把blocksize实验的L2大小改为最大的L1所需的大小（即2048）。
+
+
 ## Resources
 
 - [Linux 101的Docker教程](https://101.lug.ustc.edu.cn/Ch08/#install-docker)
