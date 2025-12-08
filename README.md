@@ -62,7 +62,7 @@ make all USE_DOCKER=0
 
 ### Error: simulation fails when using large L1 cache sizes in blocksize experiment
 
-**Symptom:** SimpleScalar exits with an error when L1 cache size is configured above 128KB.
+**Symptom:** SimpleScalar exits with an error when L1 cache size is configured above 128.
 
 **Actual**: `sim-cache` output:
 ```bash
